@@ -2,6 +2,7 @@
 
 namespace Drupal\Tangler;
 
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,14 +29,29 @@ class Command extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $fs = new Filesystem();
+        $projectArg = $input->getArgument('project');
+        $drupalArg = $input->getArgument('drupal');
+        $project = (!empty($projectArg) && $fs->isAbsolutePath($projectArg)) ?
+            $projectArg :
+            implode('/', array(getcwd(), $projectArg));
+        $drupal = $fs->isAbsolutePath($drupalArg) ?
+            $drupalArg :
+            implode('/', array(getcwd(), $drupalArg));
         $mapper = new Mapper(
-            implode('/', [getcwd(), $input->getArgument('project')]),
-            implode('/', [getcwd(), $input->getArgument('drupal')])
+            $this->normalizePath($project),
+            $this->normalizePath($drupal)
         );
         $mapper->clear();
         $mapper->mirror($mapper->getMap(
             $this->getApplication()->getComposer(true)->getInstallationManager(),
             $this->getApplication()->getComposer(true)->getRepositoryManager()
         ));
+    }
+
+    private function normalizePath($path) {
+        $patterns = array('/(\/){2,}/', '/([^\/]+\/\.{2,}\/)|(\.\/)/');
+        $replacements = array('/', '');
+        return preg_replace($patterns, $replacements, $path);
     }
 }

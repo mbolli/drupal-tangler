@@ -186,14 +186,15 @@ class Mapper
         $root = $this->getRoot();
         foreach ($map as $type => $pathMap) {
             foreach ($pathMap as $installPath => $targetPath) {
-                if ($fs->exists("$root/$installPath")) {
+                $installPath = $fs->isAbsolutePath($installPath)? $installPath : "$root/$installPath";
+                if ($fs->exists($installPath)) {
                     if ($type === 'core') {
-                        $fs->mirror("$root/$installPath", "$targetPath");
+                        $fs->mirror($installPath, $targetPath);
                     }
                     else {
                         $fs->symlink(
                             rtrim(substr($fs->makePathRelative(
-                                "$root/$installPath",
+                                $installPath,
                                 $targetPath
                             ), 3), '/'),
                             $targetPath,
