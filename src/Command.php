@@ -6,6 +6,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends BaseCommand
@@ -24,6 +25,12 @@ class Command extends BaseCommand
                 InputArgument::OPTIONAL,
                 'path to drupal in which to tangle',
                 'www'
+            )
+            ->addOption(
+                'hard-copy',
+                null,
+                InputOption::VALUE_NONE,
+                'Copy files from the project over to mapped directories instead of creating a symlink'
             );
     }
 
@@ -42,11 +49,12 @@ class Command extends BaseCommand
             $this->normalizePath($project),
             $this->normalizePath($drupal)
         );
+        $hardCopy = $input->getOption('hard-copy');
         $mapper->clear();
         $mapper->mirror($mapper->getMap(
             $this->getApplication()->getComposer(true)->getInstallationManager(),
             $this->getApplication()->getComposer(true)->getRepositoryManager()
-        ));
+        ),!empty($hardCopy));
     }
 
     private function normalizePath($path) {

@@ -182,7 +182,7 @@ class Mapper
         return $paths;
     }
 
-    public function mirror($map)
+    public function mirror($map, $hardCopy = false)
     {
         $fs = $this->getFS();
         $root = $this->getRoot();
@@ -194,14 +194,43 @@ class Mapper
                         $fs->mirror($installPath, $targetPath);
                     }
                     else {
-                        $fs->symlink(
-                            rtrim(substr($fs->makePathRelative(
-                                $installPath,
-                                $targetPath
-                            ), 3), '/'),
-                            $targetPath,
-                            true
-                        );
+                        $relInstallPath = rtrim(substr($fs->makePathRelative(
+                            $installPath,
+                            $targetPath
+                        ), 3), '/');
+                        if ($hardCopy) {
+                            if (is_dir($installPath)) {
+                                $finder = new Finder();
+                                $finder->in($installPath)
+                                    ->ignoreUnreadableDirs(true)
+                                    ->ignoreDotFiles(false)
+                                    ->ignoreVCS(true);
+                                $fs->mirror(
+                                    $installPath,
+                                    $targetPath,
+                                    $finder->getIterator(),
+                                    array(
+                                        'override' => true,
+                                        'copyonwindows' => true,
+                                        'delete' => true
+                                    )
+                                );
+                            }
+                            else {
+                               $fs->copy(
+                                    $installPath,
+                                    $targetPath,
+                                    true
+                               );
+                            }
+                        }
+                        else {
+                            $fs->symlink(
+                                $relInstallPath,
+                                $targetPath,
+                                true
+                            );
+                        }
                     }
                 }
             }
