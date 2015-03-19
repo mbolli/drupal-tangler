@@ -213,6 +213,7 @@ class Mapper
             'core'    => $this->drupal,
             'module'  => $this->drupal.'/sites/all/modules/%s',
             'theme'   => $this->drupal.'/sites/all/themes/%s',
+            'engine'  => $this->drupal.'/sites/all/themes/engines/%s',
             'drush'   => $this->drupal.'/sites/all/drush/%s',
             'profile' => $this->drupal.'/profiles/%s'
         ];
