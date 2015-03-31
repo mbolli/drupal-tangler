@@ -74,7 +74,7 @@ class Mapper
                     );
                 }
                 else {
-                    $mapRef = $typePathMap[$drupalType];
+                    $mapRef = sprintf($typePathMap[$drupalType], $name);
                 }
             }
         }
