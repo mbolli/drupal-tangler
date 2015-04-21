@@ -17,14 +17,20 @@ class Command extends BaseCommand
                 'project',
                 'p',
                 InputArgument::OPTIONAL,
-                'path to project to tangle'
+                'Path to project to tangle'
             )
             ->addOption(
                 'drupal',
                 'd',
                 InputArgument::OPTIONAL,
-                'path to drupal in which to tangle',
+                'Path to drupal in which to tangle',
                 'www'
+            )
+            ->addOption(
+                'copy',
+                'c',
+                null,
+                'Copy all files and directories'
             );
     }
 
@@ -32,7 +38,8 @@ class Command extends BaseCommand
     {
         $mapper = new Mapper(
             implode('/', [getcwd(), $input->getOption('project')]),
-            implode('/', [getcwd(), $input->getOption('drupal')])
+            implode('/', [getcwd(), $input->getOption('drupal')]),
+            $input->getOption('copy')
         );
         $mapper->clear();
         $mapper->mirror($mapper->getMap(
