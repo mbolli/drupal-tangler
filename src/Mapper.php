@@ -12,12 +12,14 @@ class Mapper
     private $fs     = false;
     private $finder = false;
     private $root   = false;
+    private $mode   = false;
     private $name   = false;
 
-    public function __construct($path, $drupal)
+    public function __construct($path, $drupal, $mode)
     {
         $this->root   = rtrim($path, '/');
         $this->drupal = rtrim($drupal, '/');
+        $this->mode   = $mode;
     }
 
     private function getFS()
@@ -187,14 +189,16 @@ class Mapper
                     if ($type === 'core') {
                         $fs->mirror("$root/$installPath", "$targetPath");
                     }
-                    else {
-                        $fs->symlink(
-                            rtrim(substr($fs->makePathRelative(
+                    if (is_dir("$root/$installPath")) {
+                        $fs->mirror(
                                 "$root/$installPath",
-                                $targetPath
-                            ), 3), '/'),
-                            $targetPath,
-                            true
+                            "$targetPath"
+                        );
+                    }
+                    else {
+                        $fs->copy(
+                            "$root/$installPath",
+                            "$targetPath"
                         );
                     }
                 }
