@@ -1,5 +1,5 @@
 {
-    "name": "drupal/tangler",
+    "name": "craychee/tangler",
     "require": {
         "symfony/filesystem": "*@stable",
         "symfony/finder": "*@stable",
@@ -11,9 +11,10 @@
             "Drupal\\Tangler\\": "src/"
         }
     },
-    "repositories": [{
-        "type": "composer",
-        "url": "http://static.drupal-packagist.org/v0.0.1"
-    }],
+    "extra": {
+       "branch-alias": {
+          "dev-master": "1.2.x-dev"
+       }
+    },
     "bin": ["bin/drupal_tangle"]
 }
