@@ -34,11 +34,11 @@ handler.
 ```
 vendor/bin/drupal_tangle -h
 Usage:
- drupal:tangle [project] [drupal]
+  drupal:tangle [options]
 
-Arguments:
- project               path to project to tangle
- drupal                path to drupal in which to tangle (default: "www")
+  Options:
+    -p, --project=PROJECT  path to project to tangle
+    -d, --drupal=DRUPAL    path to drupal in which to tangle [default: "www"]
 ```
 
 ## Composer Script Configuration

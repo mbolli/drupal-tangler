@@ -13,13 +13,15 @@ class Command extends BaseCommand
     {
         $this->setName('drupal:tangle')
             ->setDescription('Tangle code into a working Drupal application')
-            ->addArgument(
+            ->addOption(
                 'project',
+                'p',
                 InputArgument::OPTIONAL,
                 'path to project to tangle'
             )
-            ->addArgument(
+            ->addOption(
                 'drupal',
+                'd',
                 InputArgument::OPTIONAL,
                 'path to drupal in which to tangle',
                 'www'
@@ -29,8 +31,8 @@ class Command extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mapper = new Mapper(
-            implode('/', [getcwd(), $input->getArgument('project')]),
-            implode('/', [getcwd(), $input->getArgument('drupal')])
+            implode('/', [getcwd(), $input->getOption('project')]),
+            implode('/', [getcwd(), $input->getOption('drupal')])
         );
         $mapper->clear();
         $mapper->mirror($mapper->getMap(
