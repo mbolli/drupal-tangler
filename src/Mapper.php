@@ -144,7 +144,10 @@ class Mapper
     public function mapFiles()
     {
         return [
-            'files' => ['cnf/files' => $this->drupal.'/sites/default/files']
+            'files' => [
+                'cnf/files' => $this->drupal.'/sites/default/files',
+                'cnf/translations' => $this->drupal.'/sites/all/translations',
+            ]
         ];
     }
 
