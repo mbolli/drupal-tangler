@@ -74,7 +74,7 @@ class Mapper
                     );
                 }
                 else {
-                    $mapRef = $typePathMap[$drupalType];
+                    $mapRef = sprintf($typePathMap[$drupalType], $name);
                 }
             }
         }
@@ -144,7 +144,10 @@ class Mapper
     public function mapFiles()
     {
         return [
-            'files' => ['cnf/files' => $this->drupal.'/sites/default/files']
+            'files' => [
+                'cnf/files' => $this->drupal.'/sites/default/files',
+                'cnf/translations' => $this->drupal.'/sites/all/translations',
+            ]
         ];
     }
 
