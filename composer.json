@@ -11,9 +11,10 @@
             "Drupal\\Tangler\\": "src/"
         }
     },
-    "repositories": [{
-        "type": "composer",
-        "url": "http://static.drupal-packagist.org/v0.0.1"
-    }],
+    "extra": {
+       "branch-alias": {
+          "dev-master": "0.2.x-dev"
+       }
+    },
     "bin": ["bin/drupal_tangle"]
 }

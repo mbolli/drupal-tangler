@@ -34,11 +34,19 @@ handler.
 ```
 vendor/bin/drupal_tangle -h
 Usage:
- drupal:tangle [project] [drupal]
+drupal:tangle [options]
 
-Arguments:
- project               path to project to tangle
- drupal                path to drupal in which to tangle (default: "www")
+Options:
+  -p, --project=PROJECT  Path to project to tangle
+  -d, --drupal=DRUPAL    Path to drupal in which to tangle [default: "www"]
+  -c, --copy             Copy all files and directories
+  -h, --help             Display this help message
+  -q, --quiet            Do not output any message
+  -V, --version          Display this application version
+  --ansi             Force ANSI output
+  --no-ansi          Disable ANSI output
+  -n, --no-interaction   Do not ask any interactive question
+  -v|vv|vvv, --verbose   Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 ```
 
 ## Composer Script Configuration
