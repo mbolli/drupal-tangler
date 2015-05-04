@@ -14,10 +14,11 @@ class Mapper
     private $root   = false;
     private $name   = false;
 
-    public function __construct($path, $drupal)
+    public function __construct($path, $drupal, $copy = false)
     {
         $this->root   = rtrim($path, '/');
         $this->drupal = rtrim($drupal, '/');
+        $this->copy   = $copy;
     }
 
     private function getFS()
@@ -74,7 +75,7 @@ class Mapper
                     );
                 }
                 else {
-                    $mapRef = $typePathMap[$drupalType];
+                    $mapRef = sprintf($typePathMap[$drupalType], $name);
                 }
             }
         }
@@ -144,7 +145,10 @@ class Mapper
     public function mapFiles()
     {
         return [
-            'files' => ['cnf/files' => $this->drupal.'/sites/default/files']
+            'files' => [
+                'cnf/files' => $this->drupal.'/sites/default/files',
+                'cnf/translations' => $this->drupal.'/sites/all/translations',
+            ]
         ];
     }
 
@@ -183,14 +187,29 @@ class Mapper
         $root = $this->getRoot();
         foreach ($map as $type => $pathMap) {
             foreach ($pathMap as $installPath => $targetPath) {
-                if ($fs->exists("$root/$installPath")) {
+                $installPath = $fs->isAbsolutePath($installPath)? $installPath : "$root/$installPath";
+                if ($fs->exists($installPath)) {
                     if ($type === 'core') {
-                        $fs->mirror("$root/$installPath", "$targetPath");
+                        $fs->mirror($installPath, $targetPath);
+                    }
+                    elseif ($this->copy == true) {
+                        if (is_dir("$root/$installPath")) {
+                            $fs->mirror(
+                                "$root/$installPath",
+                                "$targetPath"
+                            );
+                        }
+                        else {
+                            $fs->copy(
+                                "$root/$installPath",
+                                "$targetPath"
+                            );
+                        }
                     }
                     else {
                         $fs->symlink(
                             rtrim(substr($fs->makePathRelative(
-                                "$root/$installPath",
+                                $installPath,
                                 $targetPath
                             ), 3), '/'),
                             $targetPath,
@@ -213,6 +232,7 @@ class Mapper
             'core'    => $this->drupal,
             'module'  => $this->drupal.'/sites/all/modules/%s',
             'theme'   => $this->drupal.'/sites/all/themes/%s',
+            'engine'  => $this->drupal.'/sites/all/themes/engines/%s',
             'drush'   => $this->drupal.'/sites/all/drush/%s',
             'profile' => $this->drupal.'/profiles/%s'
         ];
