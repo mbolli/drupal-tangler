@@ -68,6 +68,30 @@ You can automate the use of the tangler in response to composer events like so:
 }
 ```
 
+You can also pass parametors to the script using the extra portion of your
+composer file like so:
+
+```
+{
+...
+    "extra": {
+        "tangler": {
+            "project": "/path/to/my/project"
+            "drupal": "/path/to/my/document/root"
+            "copy": true
+        }
+    }
+...
+}
+```
+
+By default if you don't specify, the parameters are as follows (cwd is current
+working directory):
+
+* project - cwd
+* drupal - cwd/www
+* copy - false (unless your machine cannot make symlinks, then true)
+
 Note that you can just trigger the executable with these events, in which case
 the values for the different `*-cmd` events above would be like this:
 
@@ -76,6 +100,9 @@ the values for the different `*-cmd` events above would be like this:
   "vendor/bin/drupal_tangle"
 ]
 ```
+
+*Windows users cannot use the syntax above*
+
 
 ## Roadmap
 
