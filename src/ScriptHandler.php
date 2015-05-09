@@ -12,7 +12,7 @@ class ScriptHandler
         $extra = $composer->getPackage()->getExtra();
         $config = isset($extra['tangler']) ? $extra['tangler'] : array();
         $project = isset($config['project']) ? $config['project'] : getcwd();
-        $drupal = isset($config['drupal']) ? $config['drupal'] : getcwd().'/www';
+        $drupal = isset($config['drupal']) ? $config['drupal'] : getcwd() . DIRECTORY_SEPARATOR . 'www';
         $copy = isset($config['copy']);
         $mapper = new Mapper($project, $drupal, $copy);
         $mapper->mirror($mapper->getMap(
