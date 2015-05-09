@@ -188,7 +188,6 @@ class Mapper
 
     public function mirror($map)
     {
-        var_dump($map);
         $fs = $this->getFS();
         $root = $this->getRoot();
         foreach ($map as $type => $pathMap) {
