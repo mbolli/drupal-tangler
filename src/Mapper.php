@@ -228,7 +228,17 @@ class Mapper
 
     public function clear()
     {
-        $this->getFS()->remove(['directory', $this->getTypePathMap()['core']]);
+        $core_dir = $this->getTypePathMap()['core'];
+        $files = glob($core_dir . "/*");
+        if (empty($files)) {
+            $files = [];
+        }
+        $sites_index = array_search($core_dir . "/sites", $files);
+        if (isset($files[$sites_index])) {
+            unset($files[$sites_index]);
+        }
+        $files[] = $core_dir . "/sites/all";
+        $this->getFS()->remove($files);
     }
 
     public function getTypePathMap($type = null)
