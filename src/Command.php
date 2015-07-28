@@ -49,7 +49,7 @@ class Command extends BaseCommand
             implode('/', [getcwd(), $drupalArg]);
         $mapper = new Mapper(
             $this->normalizePath($project),
-            $this->normalizePath($drupal)
+            $this->normalizePath($drupal),
             $input->getOption('copy')
         );
         $mapper->clear();
