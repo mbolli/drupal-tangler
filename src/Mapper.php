@@ -228,7 +228,9 @@ class Mapper
 
     public function clear()
     {
-        $core_dir = $this->getTypePathMap()['core'];
+        $map = $this->getTypePathMap();
+        $core_dir = $map['core'];
+        unset($map['core']);
         $files = glob($core_dir . "/*");
         if (empty($files)) {
             $files = [];
@@ -237,7 +239,7 @@ class Mapper
         if (isset($files[$sites_index])) {
             unset($files[$sites_index]);
         }
-        $files[] = $core_dir . "/sites/all";
+        $files = array_merge($files, $map);
         $this->getFS()->remove($files);
     }
 
