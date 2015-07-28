@@ -18,13 +18,13 @@ class Command extends BaseCommand
             ->addOption(
                 'project',
                 'p',
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_OPTIONAL,
                 'Path to project to tangle. Default: ./'
             )
             ->addOption(
                 'drupal',
                 'd',
-                InputArgument::OPTIONAL,
+                InputOption::VALUE_OPTIONAL,
                 'Path to drupal in which to tangle. Default: ./www',
                 'www'
             )
@@ -39,8 +39,8 @@ class Command extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $fs = new Filesystem();
-        $projectArg = $input->getArgument('project');
-        $drupalArg = $input->getArgument('drupal');
+        $projectArg = $input->getOption('project');
+        $drupalArg = $input->getOption('drupal');
         $project = (!empty($projectArg) && $fs->isAbsolutePath($projectArg)) ?
             $projectArg :
             implode('/', [getcwd(), $projectArg]);

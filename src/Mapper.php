@@ -228,7 +228,16 @@ class Mapper
 
     public function clear()
     {
-        $this->getFS()->remove(['directory', $this->getTypePathMap()['core']]);
+        $files = glob($this->drupal . "/*");
+        if (empty($files)) {
+            $files = [];
+        }
+        $sites_index = array_search($this->drupal . "/sites", $files);
+        if (isset($files[$sites_index])) {
+            unset($files[$sites_index]);
+        }
+        $files[] = $this->drupal . "/sites/all";
+        $this->getFS()->remove($files);
     }
 
     public function getTypePathMap($type = null)
