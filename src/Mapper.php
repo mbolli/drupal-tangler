@@ -16,8 +16,8 @@ class Mapper
 
     public function __construct($path, $drupal, $copy = false)
     {
-        $this->root   = rtrim($path, '/');
-        $this->drupal = rtrim($drupal, '/');
+        $this->root   = rtrim($path, DIRECTORY_SEPARATOR);
+        $this->drupal = rtrim($drupal, DIRECTORY_SEPARATOR);
         $this->copy   = $copy;
     }
 
@@ -62,19 +62,19 @@ class Mapper
                   continue;
                 }
 
-                $installPath = $im->getInstaller($package->getType())
-                    ->getInstallPath($package);
+                $installPath = self::changeSlashes($im->getInstaller($package->getType())
+                    ->getInstallPath($package));
                 if (strpos($installPath, $root = $this->getRoot()) !== false) {
-                    $installPath = $this->getFS()->makePathRelative(
+                    $installPath = self::changeSlashes($this->getFS()->makePathRelative(
                         $installPath,
                         $root
-                    );
+                    ));
                 }
                 $name = explode('/', $package->getPrettyName())[1];
-                $mapRef =& $typeInstallMap[$drupalType][rtrim($installPath, '/')] ;
+                $mapRef =& $typeInstallMap[$drupalType][rtrim($installPath, DIRECTORY_SEPARATOR)] ;
                 if (in_array($drupalType, ['module', 'theme'])) {
                     $mapRef = sprintf(
-                        $typePathMap[$drupalType] . '/%s',
+                        $typePathMap[$drupalType] . DIRECTORY_SEPARATOR . '%s',
                         'contrib',
                         $name
                     );
@@ -107,7 +107,7 @@ class Mapper
 
     private function getTypeFinder($type)
     {
-        if (file_exists($dir = $this->getRoot()."/{$type}s")) {
+        if (file_exists($dir = $this->getRoot() . DIRECTORY_SEPARATOR . "{$type}s")) {
             $finder = $this->getFinder()
                 ->ignoreUnreadableDirs()
                 ->depth('== 0')
@@ -136,9 +136,9 @@ class Mapper
         $paths  = [];
         if ($name = $this->getName()) {
             foreach ($this->getCustomFilesFinder() as $file) {
-                $install = rtrim($fs->makePathRelative($file->getRealpath(), $root), '/');
+                $install = rtrim(self::changeSlashes($fs->makePathRelative($file->getRealpath(), $root)), DIRECTORY_SEPARATOR);
                 $paths["custom"][$install] = sprintf(
-                    $this->getTypePathMap('module').'/%s',
+                    $this->getTypePathMap('module') . DIRECTORY_SEPARATOR . '%s',
                     $name,
                     $file->getFilename()
                 );
@@ -151,8 +151,8 @@ class Mapper
     {
         return [
             'files' => [
-                'cnf/files' => $this->drupal.'/sites/default/files',
-                'cnf/translations' => $this->drupal.'/sites/all/translations',
+                self::changeSlashes('cnf/files') => $this->drupal . self::changeSlashes('/sites/default/files'),
+                self::changeSlashes('cnf/translations') => $this->drupal . self::changeSlashes('/sites/all/translations'),
             ]
         ];
     }
@@ -160,14 +160,14 @@ class Mapper
     public function mapSettings()
     {
         return [
-            'settings' => ['cnf/settings.php' => $this->drupal.'/sites/default/settings.php']
+            'settings' => [self::changeSlashes('cnf/settings.php') => $this->drupal . self::changeSlashes('/sites/default/settings.php')]
         ];
     }
 
     public function mapVendor()
     {
         return [
-            'vendor' => ['vendor' => $this->drupal.'/sites/default/vendor']
+            'vendor' => ['vendor' => $this->drupal . self::changeSlashes('/sites/default/vendor')]
         ];
     }
 
@@ -177,7 +177,7 @@ class Mapper
         $root   = $this->getRoot();
         $fs     = $this->getFS();
         foreach ($this->getTypeFinder($type) as $file) {
-            $install = rtrim($fs->makePathRelative($file->getRealpath(), $root), '/');
+            $install = rtrim(self::changeSlashes($fs->makePathRelative($file->getRealpath(), $root)), DIRECTORY_SEPARATOR);
             $paths["{$type}s"][$install] = sprintf(
                 $this->getTypePathMap($type),
                 $file->getFilename()
@@ -192,22 +192,22 @@ class Mapper
         $root = $this->getRoot();
         foreach ($map as $type => $pathMap) {
             foreach ($pathMap as $installPath => $targetPath) {
-                $installPath = $fs->isAbsolutePath($installPath)? $installPath : "$root/$installPath";
+                $installPath = $fs->isAbsolutePath($installPath)? $installPath : $root . DIRECTORY_SEPARATOR . $installPath;
                 if ($fs->exists($installPath)) {
                     if ($type === 'core') {
                         $fs->mirror($installPath, $targetPath);
                     }
                     elseif ($this->copy == true) {
-                        if (is_dir("$root/$installPath")) {
+                        if (is_dir($installPath)) {
                             $fs->mirror(
-                                "$root/$installPath",
-                                "$targetPath"
+                                $installPath,
+                                $targetPath
                             );
                         }
                         else {
                             $fs->copy(
-                                "$root/$installPath",
-                                "$targetPath"
+                                $installPath,
+                                $targetPath
                             );
                         }
                     }
@@ -216,7 +216,7 @@ class Mapper
                             rtrim(substr($fs->makePathRelative(
                                 $installPath,
                                 $targetPath
-                            ), 3), '/'),
+                            ), 3), DIRECTORY_SEPARATOR),
                             $targetPath,
                             true
                         );
@@ -247,11 +247,11 @@ class Mapper
     {
         $map = [
             'core'    => $this->drupal,
-            'module'  => $this->drupal.'/sites/all/modules/%s',
-            'theme'   => $this->drupal.'/sites/all/themes/%s',
-            'engine'  => $this->drupal.'/sites/all/themes/engines/%s',
-            'drush'   => $this->drupal.'/sites/all/drush/%s',
-            'profile' => $this->drupal.'/profiles/%s'
+            'module'  => $this->drupal . self::changeSlashes('/sites/all/modules/%s'),
+            'theme'   => $this->drupal . self::changeSlashes('/sites/all/themes/%s'),
+            'engine'  => $this->drupal . self::changeSlashes('/sites/all/themes/engines/%s'),
+            'drush'   => $this->drupal . self::changeSlashes('/sites/all/drush/%s'),
+            'profile' => $this->drupal . self::changeSlashes('/profiles/%s')
         ];
         if ($type) {
             return $map[$type];
@@ -268,5 +268,9 @@ class Mapper
             return 'core';
         }
         return false;
+    }
+
+    static public function changeSlashes($string) {
+        return str_replace('/', DIRECTORY_SEPARATOR, $string);
     }
 }
