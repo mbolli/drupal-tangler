@@ -44,7 +44,6 @@ class Mapper
             $this->mapByType('theme'),
             $this->mapCustom(),
             $this->mapSettings(),
-            $this->mapVendor(),
             $this->mapFiles()
         );
     }
@@ -161,13 +160,6 @@ class Mapper
     {
         return [
             'settings' => [self::changeSlashes('cnf/settings.php') => $this->drupal . self::changeSlashes('/sites/default/settings.php')]
-        ];
-    }
-
-    public function mapVendor()
-    {
-        return [
-            'vendor' => ['vendor' => $this->drupal . self::changeSlashes('/sites/default/vendor')]
         ];
     }
 
